@@ -20,3 +20,7 @@ app/infrastructure/browser/brownser/
 *.log
 .pytest_cache/
 .mypy_cache/
+
+*json
+estrutura.txt
+browser
