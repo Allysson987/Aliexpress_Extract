@@ -9,6 +9,6 @@ class WorkerAliexpress:
         handler = self.rules.rules_worker(message)
 
         if handler is None:
-            return "Entrada inválida"
+            return None
 
         return self.controller.execute_service(handler)
