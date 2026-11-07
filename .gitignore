@@ -1,0 +1,22 @@
+# Variáveis e credenciais
+.env
+.env.*
+!.env.example
+
+# Ambientes Python
+venv/
+.venv/
+env/
+
+# Cache Python
+__pycache__/
+*.py[cod]
+
+# Perfil persistente do Chromium
+
+# Perfil do navegador Playwright
+app/infrastructure/browser/brownser/
+# Outros arquivos
+*.log
+.pytest_cache/
+.mypy_cache/
