@@ -1,36 +1,25 @@
-from app.infrastructure.browser.brownser_aliexpress import BrowserAliexpress
-from app.infrastructure.parsers.aliexpress.home_page_parser import HomePageParser 
-import time
+from app.infrastructure.parsers.aliexpress.home_page_parser import HomePageParser
+from playwright.sync_api import Page
 
 
 class homePageExtract:
 
-    def __init__(self):
-        self.browser_aliexpress = BrowserAliexpress()
-        self.browser_aliexpress.start_playwright()
-        self.page = None
-        self.home_page_parser=HomePageParser()
-
-    def open_session(self):
-        self.page = self.browser_aliexpress.start_browser()
-
-    def validate_pop(self, html: str) -> bool:
-        return "pop-content" in html
+    def __init__(self, page: Page):
+        self.page = page
+        self.home_page_parser = HomePageParser()
+        self.html_full_page_home = ""
 
     def extract_page(self) -> str:
         return self.page.content()
+
+    def validate_pop(self, html: str) -> bool:
+        return "pop-content" in html
 
     def close_pop(self):
         close_button = self.page.locator(".pop-close-btn")
 
         if close_button.is_visible():
             close_button.click()
-
-    def close_session(self):
-        try:
-            self.browser_aliexpress.close_browser()
-        finally:
-            self.page = None
 
     def full_page_for_scroll(self) -> str:
         last_height = 0
@@ -57,6 +46,22 @@ class homePageExtract:
 
         return self.page.content()
 
+    def offers_day(self) -> dict | None:
+        return self.home_page_parser.offerts_day(
+            self.html_full_page_home
+        )
+
+    def all_offers_home(self) -> dict | None:
+        return self.home_page_parser.all_products_home(
+            self.html_full_page_home
+        )
+
+    def full(self) -> dict:
+        return {
+            "offers_day": self.offers_day(),
+            "offers_all": self.all_offers_home()
+        }
+
     def navigator_homePage(self):
         self.page.goto(
             "https://pt.aliexpress.com/",
@@ -68,6 +73,4 @@ class homePageExtract:
         if self.validate_pop(html_home_page):
             self.close_pop()
 
-        html_full_page_home = self.full_page_for_scroll()
-        offers=self.home_page_parser.offerts_day(html_full_page_home)
-        return offers
+        self.html_full_page_home = self.full_page_for_scroll()
